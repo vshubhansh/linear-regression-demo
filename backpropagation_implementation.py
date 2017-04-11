@@ -37,7 +37,7 @@ for e in range(epochs):
         # TODO: Calculate the output
         hidden_input = np.dot(x , weights_input_hidden)
         hidden_output = sigmoid(hidden_input)
-        output = sigmoid(np.dot(hidden_layer_output,weights_hidden_output))
+        output = sigmoid(np.dot(hidden_output,weights_hidden_output))
 
         ## Backward pass ##
         # TODO: Calculate the network's prediction error
@@ -49,19 +49,18 @@ for e in range(epochs):
         ## propagate errors to hidden layer
 
         # TODO: Calculate the hidden layer's contribution to the error
-        hidden_error = None
-        
+        hidden_error = np.dot(output_error_term, weights_hidden_output)
+
         # TODO: Calculate the error term for the hidden layer
-        hidden_error_term = None
-        
+        hidden_error_term = hidden_error * hidden_output * (1 - hidden_output)
+
         # TODO: Update the change in weights
-        del_w_hidden_output += 0
-        del_w_input_hidden += 0
+        del_w_hidden_output += output_error_term * hidden_output
+        del_w_input_hidden += hidden_error_term * x[:, None]
 
     # TODO: Update weights
-    weights_input_hidden += 0
-    weights_hidden_output += 0
-
+    weights_input_hidden += learnrate * del_w_input_hidden / n_records
+    weights_hidden_output += learnrate * del_w_hidden_output / n_records
     # Printing out the mean square error on the training set
     if e % (epochs / 10) == 0:
         hidden_output = sigmoid(np.dot(x, weights_input_hidden))
@@ -81,4 +80,3 @@ out = sigmoid(np.dot(hidden, weights_hidden_output))
 predictions = out > 0.5
 accuracy = np.mean(predictions == targets_test)
 print("Prediction accuracy: {:.3f}".format(accuracy))
-
